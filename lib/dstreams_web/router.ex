@@ -20,10 +20,18 @@ defmodule DstreamsWeb.Router do
     get "/", PageController, :index
   end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", DstreamsWeb do
-  #   pipe_through :api
-  # end
+  scope "/", DstreamsWeb do
+    pipe_through :browser
+
+    get "/bbgtickers", PageController, :bbgtickers
+  end
+
+
+  scope "/api", DstreamsWeb.Api do
+    pipe_through :api
+
+    resources "/bbg", BbgController, only: [:show, :index, :create]
+  end
 
   # Enables LiveDashboard only for development
   #

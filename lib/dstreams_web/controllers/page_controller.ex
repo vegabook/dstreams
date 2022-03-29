@@ -4,4 +4,10 @@ defmodule DstreamsWeb.PageController do
   def index(conn, _params) do
     render(conn, "index.html")
   end
+
+  def bbgtickers(conn, _params) do
+    render(conn, "bbg.html")
+  end
 end
+
+  
