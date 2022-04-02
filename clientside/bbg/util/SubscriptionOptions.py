@@ -2,7 +2,7 @@ from blpapi_import_helper import blpapi
 
 DEFAULT_SERVICE = "//blp/mktdata"
 DEFAULT_TOPIC_PREFIX = "/ticker/"
-DEFAULT_TOPIC = "BTC Curncy"
+DEFAULT_TOPIC = "EUR Curncy"
 
 
 def addSubscriptionOptionsForSnapshot(parser):

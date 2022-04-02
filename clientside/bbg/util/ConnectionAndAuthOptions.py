@@ -265,7 +265,6 @@ def createSessionOptions(options):
         options.sessionIdentityAuthOptions)
     print(f"Connecting to "
           f"{', '.join([h[0] + ':' + str(h[1]) for h in sessionOptions.serverAddresses()])}")
-
     return sessionOptions
 
 
