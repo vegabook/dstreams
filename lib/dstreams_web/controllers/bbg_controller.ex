@@ -12,9 +12,10 @@ defmodule DstreamsWeb.Api.BbgController do
 
   def create(conn, params) do
     IO.puts("-----------")
+    IO.inspect params
     conn
-    |> put_status(:created)
-    |> put_resp_header("location", " ") # XXX not working TODO
+    |> put_status(:ok)
+    |> send_resp(200, "ok")
   end
 
 end
