@@ -21,7 +21,10 @@ DEFAULT_SERVICE = "//blp/mktdata"
 DEFAULT_TOPIC_PREFIX = "/ticker/"
 DEFAULT_TOPIC = ["BTC Curncy", "ETH Curncy"]
 
+
 def create_subscription_list(tickers, options):
+    """dstreams take on creating a subscription list. Does not go via 
+    the options object """
     subscriptions = blpapi.SubscriptionList()
     correls = {}
     for ticker in tickers:
@@ -30,7 +33,9 @@ def create_subscription_list(tickers, options):
         correls[ticker] = correlid
     return subscriptions, correls
 
+
 def create_unsubscription_list(correls, options):
+    """ unsubscribe list including correlations """
     subscriptions = blpapi.SubscriptionList()
     for ticker, correlid in correls.items():
         subscriptions.add(ticker, options.fields, options.options, correlid)
@@ -53,15 +58,13 @@ def createSubscriptionList(options):
         options.options.append(f"interval={options.interval}")
 
     subscriptions = blpapi.SubscriptionList()
-    correlations = {}
     for topic in options.topics:
         correlid = blpapi.CorrelationId(topic)
         subscriptions.add(topic,
                           options.fields,
                           options.options,
-                          correlid)
-        correlations[topic] = correlid
-    return subscriptions, correlations
+                          blpapi.CorrelationId(topic))
+    return subscriptions
 
 
 class SubscriptionEventHandler(object):
@@ -166,6 +169,7 @@ def parseCmdLine():
 def main():
     options = parseCmdLine()
 
+
     sessionOptions = createSessionOptions(options)
     setSubscriptionSessionOptions(sessionOptions, options)
     sessionOptions.setMaxEventQueueSize(options.eventQueueSize)
@@ -181,7 +185,10 @@ def main():
             print("Failed to open service.")
             return
 
-        subscriptions, correlations = createSubscriptionList(options)
+        subscriptions = createSubscriptionList(options)
+        correls = [subscriptions.correlationIdAt(x) for x in range(subscriptions.size())]
+        tickers = [subscriptions.topicStringAt(x) for x in range(subscriptions.size())]
+        correlations = dict(zip(tickers, correls))
         session.subscribe(subscriptions)
         nowtime = dt.datetime.utcnow()
         unsubed = False
@@ -190,10 +197,15 @@ def main():
             time.sleep(0.5)
             if (dt.datetime.utcnow() - nowtime).total_seconds() > 5:
                 if not unsubed: 
-                    #handler.yesprint = False
+                    handler.yesprint = False
                     unsub = {t: c for t, c in correlations.items() if t in ["ETH Curncy"]}
+                    TODO
                     print("---------------------------")
                     print(unsub)
+                    #TODO: this unsub is returning tickers and fields in dict keys
+                    #TODO: investigate if fields are independent of tickers when subscribing
+                    #TODO: by subscribg separate to ticker1:field1 and ticker2:fielder2 
+
                     unsub = create_unsubscription_list(unsub, options)
                     session.unsubscribe(unsub)
                     unsubed = True

@@ -164,6 +164,7 @@ def main():
 
     sessionOptions = createSessionOptions(options)
     session = blpapi.Session(sessionOptions)
+    breakpoint()
 
     try:
         if not session.start():
