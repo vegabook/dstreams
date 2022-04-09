@@ -27,7 +27,7 @@ defmodule DstreamsWeb.Router do
   end
 
 
-  scope "/api", DstreamsWeb.Api do
+  scope "/api/bbg", DstreamsWeb.Api do
     pipe_through :api
 
     resources "/bbg", BbgController, only: [:show, :index, :create]
