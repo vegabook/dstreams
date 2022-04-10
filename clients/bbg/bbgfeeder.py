@@ -1,9 +1,11 @@
 import time
+import asyncio
+import aiohttp
 import datetime as dt
 
 from argparse import ArgumentParser, RawTextHelpFormatter
 
-from blpapi_import_helper import blpapi
+#from blpapi_import_helper import blpapi
 
 from util.SubscriptionOptions import \
     addSubscriptionOptions, \
@@ -166,10 +168,8 @@ def parseCmdLine():
     return options
 
 
-def main():
+def bbg_main():
     options = parseCmdLine()
-
-
     sessionOptions = createSessionOptions(options)
     setSubscriptionSessionOptions(sessionOptions, options)
     sessionOptions.setMaxEventQueueSize(options.eventQueueSize)
@@ -199,7 +199,7 @@ def main():
                 if not unsubed: 
                     handler.yesprint = False
                     unsub = {t: c for t, c in correlations.items() if t in ["ETH Curncy"]}
-                    TODO
+                    #TODO
                     print("---------------------------")
                     print(unsub)
                     #TODO: this unsub is returning tickers and fields in dict keys
@@ -220,11 +220,58 @@ def main():
         session.stop()
 
 
+# ------------- async ---------------
+
+# TODO 
+# argparse sub_max, poll_secs, url, id etc
+
+
+
+class Poller(): 
+    def __init__(self, 
+            url = "http://suprabonds.com",     # server url
+            poll_secs = 2,                     # poll every 
+            sub_max = 100, 
+            b_id = "bloomer1"):
+        self.url = url
+        self.poll_secs = poll_secs
+        self.sub_max = sub_max
+        self.b_id = b_id
+        self.session = aiohttp.ClientSession()
+        self.sub_list = []
+        self.runner_task = asyncio.create_task(self.poll_runner())
+
+    async def dispatch(self, command, parameters = None):
+        """ dispatch commands to correct place """
+        if command == "ping":
+            print("ping", dt.datetime.utcnow())
+            async with self.session.post(self.url + "/bbg", data = b"hello") as resp:
+                print(Fore.GREEN, resp.text, Style.RESET_ALL)
+        else:
+            pass
+        self.runner_task = asyncio.create_task(self.poll_runner())
+
+    async def poll_runner(self):
+        while True:
+            await syncio.sleep(self.poll_secs)
+            await self.dispatch("ping")
+
+
+
+async def main():
+    poller = Poller()
+    input("Press Enter to end...")
+
+
 if __name__ == "__main__":
-    try:
-        main()
-    except Exception as e:  # pylint: disable=broad-except
-        print(e)
+    yes_async = True
+    if yes_async:
+        asyncio.run(main())
+    else:
+        try:
+            bbg_main()
+        except Exception as e:  # pylint: disable=broad-except
+            print(e)
 
 
 __copyright__ = """
