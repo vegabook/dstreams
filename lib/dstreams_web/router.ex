@@ -26,8 +26,13 @@ defmodule DstreamsWeb.Router do
     get "/bbgtickers", PageController, :bbgtickers
   end
 
+  scope "/api", DstreamsWeb.Api do
+    pipe_through :api
 
-  scope "/api/bbg", DstreamsWeb.Api do
+    get "/test", BbgController, :test_send
+  end
+
+  scope "/api", DstreamsWeb.Api do
     pipe_through :api
 
     resources "/bbg", BbgController, only: [:show, :index, :create]

@@ -18,6 +18,10 @@ defmodule DstreamsWeb.Api.BbgController do
     |> send_resp(200, "ok")
   end
 
+  def test_send(conn, _params) do
+    json(conn, %{data: %{live: ["test_recieved"]}})
+  end
+
 end
       
 
