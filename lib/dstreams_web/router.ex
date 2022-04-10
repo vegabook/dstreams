@@ -16,26 +16,17 @@ defmodule DstreamsWeb.Router do
 
   scope "/", DstreamsWeb do
     pipe_through :browser
-
     get "/", PageController, :index
   end
 
-  scope "/", DstreamsWeb do
-    pipe_through :browser
-
-    get "/bbgtickers", PageController, :bbgtickers
+  scope "/api/v1", DstreamsWeb.Api do
+    pipe_through :api
+    post "/post_example", BbgController, :post_example
   end
 
-  scope "/api", DstreamsWeb.Api do
+  scope "/api/v1", DstreamsWeb.Api do
     pipe_through :api
-
-    get "/test", BbgController, :test_send
-  end
-
-  scope "/api", DstreamsWeb.Api do
-    pipe_through :api
-
-    resources "/bbg", BbgController, only: [:show, :index, :create]
+    resources "/ping", BbgController, only: [:update]
   end
 
   # Enables LiveDashboard only for development
